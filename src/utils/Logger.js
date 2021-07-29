@@ -88,7 +88,7 @@ class XLSLogger {
   }
 
   _getHeaders(entries) {
-    const headers = ['t, s'];
+    const headers = [__('t, s')];
     for (const key in entries) {
       if (STORED_VALUES.includes(key)) {
         const { label, units } = entries[key];
