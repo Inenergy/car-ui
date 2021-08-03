@@ -1,3 +1,5 @@
+const { readFileSync } = require('fs');
+const { homedir } = require('os');
 const path = require('path');
 const i18n = require('./utils/translator');
 
@@ -5,6 +7,8 @@ i18n.loadJSON(path.join(__dirname, '..', 'locale', 'ru.json'), 'ru');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'de.json'), 'de');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'en.json'), 'en');
 i18n.setLocale('ru');
+
+const isPi = process.platform === 'linux' && process.arch === 'arm';
 
 const MAX_POINTS = 2000;
 
@@ -150,24 +154,30 @@ const STORED_VALUES = [
 
 STORED_VALUES.numOfBatteryValues = 2;
 
-const GROUND_RESISTANCE = {
-  low: { dutyCycle: 0, label: i18n.__('low') },
-  medium: { dutyCycle: 128 * 4000, label: i18n.__('medium') },
-  high: { dutyCycle: 138 * 4000, label: i18n.__('high') },
-  veryHigh: { dutyCycle: 148 * 4000, label: i18n.__('very high') },
-};
+const CONFIG = JSON.parse(
+  readFileSync(
+    isPi ? `${homedir()}/car-ui/config.json` : `config.json`
+  )
+);
 
-const CHART_CONSTRAINTS = {
-  'time': [0, 10],
-  'batteryVoltage': [6, 9],
-  'batteryCurrent': [0, 20],
-  'fuelCellVoltage': [0, 15],
-  'fuelCellCurrent': [0, 6],
-  'fuelCellTemp': [0, 60],
-  'hydrogenConsumption': [0, 800],
+const GROUND_RESISTANCE = {};
+
+for (const key of ['low', 'medium', 'high', 'veryHigh']) {
+  GROUND_RESISTANCE[key] = {
+    dutyCycle: (CONFIG[key] || 0) * 4000,
+    label: i18n.__(key),
+  };
 }
 
-const isPi = process.platform === 'linux' && process.arch === 'arm';
+const CHART_CONSTRAINTS = {
+  time: [0, 10],
+  batteryVoltage: [6, 9],
+  batteryCurrent: [0, 20],
+  fuelCellVoltage: [0, 15],
+  fuelCellCurrent: [0, 6],
+  fuelCellTemp: [0, 60],
+  hydrogenConsumption: [0, 800],
+};
 
 module.exports = {
   SERVICE_UUID,
@@ -184,6 +194,7 @@ module.exports = {
   OUTPUT_PIN,
   MAX_POINTS,
   CHART_CONSTRAINTS,
+  CONFIG,
   isPi,
   __: i18n.__.bind(i18n),
 };

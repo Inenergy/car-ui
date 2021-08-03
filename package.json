@@ -1,6 +1,6 @@
 {
   "name": "car-ui",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "User interface for drift car",
   "main": "src/main.js",
   "repository": {

@@ -42,7 +42,7 @@
   "low": "Niedrige",
   "medium": "Mittlere",
   "high": "Hohe",
-  "very high": "Segr hohe",
+  "veryHigh": "Segr hohe",
   "ml/min": "ml/min",
   "bar": "bar",
   "s": "s",

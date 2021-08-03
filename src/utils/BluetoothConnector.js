@@ -6,6 +6,7 @@ const {
   CHARACTERISTIC_UUID,
   SERVICE_UUID,
   SEPARATORS,
+  CONFIG,
   __,
 } = require('../constants');
 const fs = require('fs');
@@ -18,7 +19,7 @@ class BluetoothConnector extends EventEmitter {
     this._connectedDevice = null;
     this.rememberPrevious = false;
     try {
-      this.carBtAddress = require('/home/pi/car-ui/config.json').MACAddress;
+      this.carBtAddress = CONFIG.MACAddress;
     } catch (e) {
       console.error(e.message);
       this.carBtAddress = null;
