@@ -1,5 +1,4 @@
 const { readFileSync } = require('fs');
-const { homedir } = require('os');
 const path = require('path');
 const i18n = require('./utils/translator');
 
@@ -155,7 +154,7 @@ const STORED_VALUES = [
 STORED_VALUES.numOfBatteryValues = 2;
 
 const CONFIG = JSON.parse(
-  readFileSync(isPi ? `${homedir()}/car-ui/config.json` : `config.json`)
+  readFileSync(isPi ? `/home/pi/car-ui/config.json` : `config.json`)
 );
 
 const GROUND_RESISTANCE = {};
