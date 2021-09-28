@@ -6,7 +6,7 @@ const i18n = require('./utils/translator');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'ru.json'), 'ru');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'de.json'), 'de');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'en.json'), 'en');
-i18n.setLocale('ru');
+i18n.setLocale(process.env.LANG.slice(0, 2));
 
 const isPi = process.platform === 'linux' && process.arch === 'arm';
 
@@ -155,9 +155,7 @@ const STORED_VALUES = [
 STORED_VALUES.numOfBatteryValues = 2;
 
 const CONFIG = JSON.parse(
-  readFileSync(
-    isPi ? `${homedir()}/car-ui/config.json` : `config.json`
-  )
+  readFileSync(isPi ? `${homedir()}/car-ui/config.json` : `config.json`)
 );
 
 const GROUND_RESISTANCE = {};
