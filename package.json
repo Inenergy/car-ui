@@ -28,7 +28,7 @@
     "chokidar": "^1.7.0",
     "cross-env": "^6.0.3",
     "css-loader": "^3.4.2",
-    "electron": "^2.0.18",
+    "electron": "^6.0.0",
     "electron-builder": "^21.2.0",
     "file-loader": "^5.0.2",
     "jest": "^25.1.0",
@@ -44,15 +44,14 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "@abandonware/noble": "^1.9.2-14",
     "chart.js": "^2.9.3",
     "chartjs-plugin-zoom": "^0.7.5",
     "core-js": "^3.15.2",
-    "drivelist": "^5.0.0",
     "exceljs": "^3.10.0",
-    "noble": "^1.9.1",
     "pigpio": "^3.0.0",
     "regenerator-runtime": "^0.13.7",
-    "usb-detection": "^3.0.0"
+    "usb-detection": "^4.7.0"
   },
   "jest": {
     "transform": {
