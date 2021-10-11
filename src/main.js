@@ -170,4 +170,5 @@ function launch() {
   });
 }
 
+app.commandLine.appendSwitch('no-sandbox');
 app.on('ready', launch);
