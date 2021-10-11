@@ -1,4 +1,4 @@
-const noble = require('noble');
+const noble = require('@abandonware/noble');
 const EventEmitter = require('events');
 const DataHandler = require('./DataHandler');
 const {
@@ -18,6 +18,7 @@ class BluetoothConnector extends EventEmitter {
     this.foundCars = [];
     this._connectedDevice = null;
     this.rememberPrevious = false;
+    this.parser = new DataHandler();
     try {
       this.carBtAddress = CONFIG.MACAddress;
     } catch (e) {
@@ -31,7 +32,7 @@ class BluetoothConnector extends EventEmitter {
     this.foundCars = [];
     this.rememberPrevious = rememberPrevious;
     if (noble.state === 'poweredOn') {
-      noble.startScanning([SERVICE_UUID]);
+      noble.startScanning([SERVICE_UUID], false);
     } else {
       this._listenStateChange();
     }
@@ -45,7 +46,7 @@ class BluetoothConnector extends EventEmitter {
     noble.on('stateChange', (state) => {
       if (state === 'poweredOn') {
         console.info('Noble start scanning');
-        noble.startScanning([SERVICE_UUID]);
+        noble.startScanning([SERVICE_UUID], false);
       } else {
         console.warn('Noble stop scanning');
         noble.stopScanning();
@@ -60,7 +61,11 @@ class BluetoothConnector extends EventEmitter {
         address: device.address,
         name: device.advertisement.localName,
       });
-      if (this.rememberPrevious && device.address && device.address === this.carBtAddress) {
+      if (
+        this.rememberPrevious &&
+        device.address &&
+        device.address === this.carBtAddress
+      ) {
         console.info('Noble found car', device.address);
         noble.stopScanning();
         this._connectToDevice(device);
@@ -69,11 +74,7 @@ class BluetoothConnector extends EventEmitter {
   }
 
   connect(address) {
-    fs.writeFile(
-      '/home/pi/car-ui/config.json',
-      JSON.stringify({ MACAddress: address }),
-      () => {}
-    );
+    this._storeAddress(address)
     noble.stopScanning();
     clearTimeout(this.timeout);
     this._connectToDevice(
@@ -86,79 +87,80 @@ class BluetoothConnector extends EventEmitter {
     this.emit('disconnected');
   }
 
-  _connectToDevice(device) {
-    device.connect((err) => {
-      if (err) {
-        console.error(err.message);
-        this.startScanning();
-        return;
-      }
-      device.once('disconnected', () => {
-        this.emit('disconnected');
-        this.startScanning();
-      });
-      this._connectedDevice = device;
-      device.discoverSomeServicesAndCharacteristics(
-        [SERVICE_UUID],
-        [CHARACTERISTIC_UUID],
-        this._onServicesAndCharacteristicsDiscovered.bind(this)
-      );
+  async _connectToDevice(device) {
+    await device.connectAsync();
+    device.once('disconnect', () => {
+      this.emit('disconnected');
+      this.carBtAddress = device.address;
+      this.startScanning(true);
     });
+    this._connectedDevice = device;
+    this._discoverCharacteristic();
   }
 
-  _onServicesAndCharacteristicsDiscovered(err, services, characteristics) {
-    if (err) {
-      this._handleError(err);
-      return;
-    }
+  async _discoverCharacteristic() {
+    const { services: _, characteristics } =
+      await this._connectedDevice.discoverSomeServicesAndCharacteristicsAsync(
+        [SERVICE_UUID],
+        [CHARACTERISTIC_UUID]
+      );
     console.log('Noble discovered characteristic');
     const characteristic = characteristics[0];
     if (!characteristic) {
       this._handleError({ message: 'Characteristic list is empty' });
       return;
     }
-    this._subscribeToCharacteristic(characteristic);
+    await this._subscribeToCharacteristic(characteristic);
     this._listenCharacteristicData(characteristic);
   }
 
-  _subscribeToCharacteristic(characteristic) {
-    characteristic.subscribe((err) => {
-      if (err) {
-        this._handleError(err);
-        return;
-      }
-      console.log('Subscribed to characteristic');
-      this.emit('connected');
-    });
+  async _subscribeToCharacteristic(characteristic) {
+    await characteristic.subscribeAsync();
+    console.log('Subscribed to characteristic');
+    this.emit('connected');
   }
 
   _listenCharacteristicData(characteristic) {
-    const parser = new DataHandler();
     let firstChunk;
     const handleData = (data) => {
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        this.startScanning();
-        this.emit('disconnected');
-      }, CONNECTION_TIMEOUT);
-      if (data.indexOf(SEPARATORS) == 0) firstChunk = data;
-      else if (firstChunk) {
-        try {
-          data = parser.getHashMapFromBuffer(Buffer.concat([firstChunk, data]));
-          this.emit('data', data);
-        } catch (e) {
-          console.error(e.message);
-        } finally {
-          firstChunk = null;
-        }
-      }
+      this._resetDisconnectedTimeout();
+      firstChunk = this._parseData(data, firstChunk);
     };
     characteristic.on('data', handleData);
+  }
+
+  _parseData(data, firstChunk) {
+    if (data.indexOf(SEPARATORS) == 0) return data;
+    else if (firstChunk) {
+      try {
+        data = this.parser.getHashMapFromBuffer(
+          Buffer.concat([firstChunk, data])
+        );
+        this.emit('data', data);
+      } catch (e) {
+        console.error(e.message);
+      }
+    }
+  }
+
+  _resetDisconnectedTimeout() {
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      this.startScanning();
+      this.emit('disconnected');
+    }, CONNECTION_TIMEOUT);
   }
 
   _handleError(err) {
     console.error(err.message);
     this.startScanning();
+  }
+
+  _storeAddress(address) {
+    fs.promises.writeFile(
+      '/home/pi/car-ui/config.json',
+      JSON.stringify({ MACAddress: address })
+    );
   }
 }
 
