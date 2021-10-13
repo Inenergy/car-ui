@@ -19,6 +19,7 @@ class BluetoothConnector extends EventEmitter {
     this.foundCars = [];
     this._connectedDevice = null;
     this.rememberPrevious = false;
+    this._isConnecting = false;
     try {
       this.carBtAddress = CONFIG.MACAddress;
     } catch (e) {
@@ -94,7 +95,10 @@ class BluetoothConnector extends EventEmitter {
   }
 
   _connectToDevice(device) {
+    if (!this._isConnecting) this._isConnecting = true;
+    else return;
     device.connect((err) => {
+      this._isConnecting = false;
       if (err) {
         console.error(err.message);
         this.startScanning();
