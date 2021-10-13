@@ -168,21 +168,21 @@ const GROUND_RESISTANCE = {
     label: i18n.__('low'),
   },
   medium: {
-    dutyCycle: 132,
+    dutyCycle: 128 * 4000,
     label: i18n.__('medium'),
   },
   high: {
-    dutyCycle: 137,
+    dutyCycle: 133 * 4000,
     label: i18n.__('high'),
   },
   veryHigh: {
-    dutyCycle: 143,
+    dutyCycle: 148 * 4000,
     label: i18n.__('veryHigh'),
   },
 };
 
 for (const key of ['low', 'medium', 'high', 'veryHigh']) {
-  if (!isNaN(CONFIG[key]))
+  if ((typeof(CONFIG[key]) == 'number'))
     GROUND_RESISTANCE[key].dutyCycle = CONFIG[key] * 4000;
 }
 
