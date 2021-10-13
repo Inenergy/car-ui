@@ -157,7 +157,7 @@ const CONFIG_PATH = isPi ? `~/.car-ui/config.json` : `config.json`;
 let CONFIG;
 try {
   CONFIG = JSON.parse(readFileSync(CONFIG_PATH));
-} catch {
+} catch (e) {
   writeFile(CONFIG_PATH, JSON.stringify({}), Function.prototype);
   CONFIG = {};
 }
