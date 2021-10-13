@@ -1,4 +1,4 @@
-const { readFileSync } = require('fs');
+const { readFileSync, writeFile } = require('fs');
 const path = require('path');
 const i18n = require('./utils/translator');
 
@@ -153,9 +153,14 @@ const STORED_VALUES = [
 
 STORED_VALUES.numOfBatteryValues = 2;
 
-const CONFIG = JSON.parse(
-  readFileSync(isPi ? `/home/pi/car-ui/config.json` : `config.json`)
-);
+const CONFIG_PATH = isPi ? `~/.car-ui/config.json` : `config.json`;
+let CONFIG;
+try {
+  CONFIG = JSON.parse(readFileSync(CONFIG_PATH));
+} catch {
+  writeFile(CONFIG_PATH, JSON.stringify({}), Function.prototype);
+  CONFIG = {};
+}
 
 const GROUND_RESISTANCE = {};
 
@@ -192,6 +197,7 @@ module.exports = {
   MAX_POINTS,
   CHART_CONSTRAINTS,
   CONFIG,
+  CONFIG_PATH,
   isPi,
   __: i18n.__.bind(i18n),
 };

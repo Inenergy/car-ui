@@ -7,6 +7,7 @@ const {
   SERVICE_UUID,
   SEPARATORS,
   CONFIG,
+  CONFIG_PATH,
   __,
 } = require('../constants');
 const fs = require('fs');
@@ -60,7 +61,11 @@ class BluetoothConnector extends EventEmitter {
         address: device.address,
         name: device.advertisement.localName,
       });
-      if (this.rememberPrevious && device.address && device.address === this.carBtAddress) {
+      if (
+        this.rememberPrevious &&
+        device.address &&
+        device.address === this.carBtAddress
+      ) {
         console.info('Noble found car', device.address);
         noble.stopScanning();
         this._connectToDevice(device);
@@ -70,9 +75,9 @@ class BluetoothConnector extends EventEmitter {
 
   connect(address) {
     fs.writeFile(
-      '/home/pi/car-ui/config.json',
-      JSON.stringify({ MACAddress: address }),
-      () => {}
+      CONFIG_PATH,
+      JSON.stringify(Object.assign(CONFIG, { MACAddress: address })),
+      Function.prototype
     );
     noble.stopScanning();
     clearTimeout(this.timeout);
@@ -82,8 +87,10 @@ class BluetoothConnector extends EventEmitter {
   }
 
   disconnect() {
+    this._connectedDevice.removeAllListeners('disconnect');
     this._connectedDevice.disconnect();
     this.emit('disconnected');
+    this.startScanning();
   }
 
   _connectToDevice(device) {
@@ -93,12 +100,11 @@ class BluetoothConnector extends EventEmitter {
         this.startScanning();
         return;
       }
-      device.once('disconnected', () => {
-        this.emit('disconnected');
-        this.startScanning();
-      });
       this._connectedDevice = device;
-      device.discoverSomeServicesAndCharacteristics(
+      this._connectedDevice.once('disconnect', () => {
+        this._connectToDevice(this._connectedDevice);
+      });
+      this._connectedDevice.discoverSomeServicesAndCharacteristics(
         [SERVICE_UUID],
         [CHARACTERISTIC_UUID],
         this._onServicesAndCharacteristicsDiscovered.bind(this)
@@ -106,7 +112,7 @@ class BluetoothConnector extends EventEmitter {
     });
   }
 
-  _onServicesAndCharacteristicsDiscovered(err, services, characteristics) {
+  _onServicesAndCharacteristicsDiscovered(err, _, characteristics) {
     if (err) {
       this._handleError(err);
       return;
