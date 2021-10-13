@@ -162,13 +162,28 @@ try {
   CONFIG = {};
 }
 
-const GROUND_RESISTANCE = {};
+const GROUND_RESISTANCE = {
+  low: {
+    dutyCycle: 0,
+    label: i18n.__('low'),
+  },
+  medium: {
+    dutyCycle: 132,
+    label: i18n.__('medium'),
+  },
+  high: {
+    dutyCycle: 137,
+    label: i18n.__('high'),
+  },
+  veryHigh: {
+    dutyCycle: 143,
+    label: i18n.__('veryHigh'),
+  },
+};
 
 for (const key of ['low', 'medium', 'high', 'veryHigh']) {
-  GROUND_RESISTANCE[key] = {
-    dutyCycle: (CONFIG[key] || 0) * 4000,
-    label: i18n.__(key),
-  };
+  if (!isNaN(CONFIG[key]))
+    GROUND_RESISTANCE[key].dutyCycle = CONFIG[key] * 4000;
 }
 
 const CHART_CONSTRAINTS = {
