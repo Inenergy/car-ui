@@ -153,15 +153,6 @@ const STORED_VALUES = [
 
 STORED_VALUES.numOfBatteryValues = 2;
 
-const CONFIG_PATH = isPi ? `~/.car-ui/config.json` : `config.json`;
-let CONFIG;
-try {
-  CONFIG = JSON.parse(readFileSync(CONFIG_PATH));
-} catch (e) {
-  writeFile(CONFIG_PATH, JSON.stringify({}), Function.prototype);
-  CONFIG = {};
-}
-
 const GROUND_RESISTANCE = {
   low: {
     dutyCycle: 0,
@@ -172,7 +163,7 @@ const GROUND_RESISTANCE = {
     label: i18n.__('medium'),
   },
   high: {
-    dutyCycle: 133 * 4000,
+    dutyCycle: 132 * 4000,
     label: i18n.__('high'),
   },
   veryHigh: {
@@ -181,9 +172,20 @@ const GROUND_RESISTANCE = {
   },
 };
 
-for (const key of ['low', 'medium', 'high', 'veryHigh']) {
-  if ((typeof(CONFIG[key]) == 'number'))
-    GROUND_RESISTANCE[key].dutyCycle = CONFIG[key] * 4000;
+const CONFIG_PATH = isPi ? `~/.car-ui/config.json` : `config.json`;
+let CONFIG = {};
+
+try {
+  CONFIG = JSON.parse(readFileSync(CONFIG_PATH));
+  for (const key in GROUND_RESISTANCE) {
+    if (typeof CONFIG[key] == 'number')
+      GROUND_RESISTANCE[key].dutyCycle = CONFIG[key] * 4000;
+  }
+} catch (e) {
+  for (let key in GROUND_RESISTANCE) {
+    CONFIG[key] = GROUND_RESISTANCE[key].dutyCycle / 4000;
+  }
+  writeFile(CONFIG_PATH, JSON.stringify(CONFIG), Function.prototype);
 }
 
 const CHART_CONSTRAINTS = {
