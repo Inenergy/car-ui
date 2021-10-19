@@ -67,7 +67,7 @@ class XLSLogger {
 
   _addWorksheets() {
     this.batteryWs = this.wb.addWorksheet(__('battery'));
-    this.FCws = this.wb.addWorksheet(__('fuel cell'));
+    this.FCws = this.wb.addWorksheet(__('fuel cell stack'));
   }
 
   _fillHeaders() {
