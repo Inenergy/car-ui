@@ -15,4 +15,5 @@ npm run build
 # MAIN APP AUTOSTART
 echo 'sudo /home/pi/car-ui/dist/linux-armv7l-unpacked/car-ui' > ~/.xinitrc
 chmod +x ~/.xinitrc
-echo "{}" > config.json
+mkdir ~/.car-ui
+echo "{}" > ~/.car-ui/config.json
