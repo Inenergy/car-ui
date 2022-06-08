@@ -13,7 +13,7 @@ npm i
 npm run build
 
 # MAIN APP AUTOSTART
-echo 'sudo /home/pi/car-ui/dist/linux-armv7l-unpacked/car-ui' > ~/.xinitrc
-chmod +x ~/.xinitrc
+mkdir ~/.inenergy
+echo 'sudo ~/inenergy-gui/dist/car-ui*.AppImage > ~/.inenergy/car-ui.log' > ~/.config/openbox/autostart
 mkdir ~/.car-ui
 echo "{}" > ~/.car-ui/config.json
