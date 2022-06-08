@@ -70,6 +70,7 @@
     "trailingComma": "es5"
   },
   "build": {
+    "rebuildDependencies": false,
     "linux": {
       "executableName": "car-ui",
       "category": "education"
