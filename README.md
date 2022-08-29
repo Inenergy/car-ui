@@ -9,8 +9,8 @@
 Когда ОС загрузится завершаем работу текущей программы через alt+f4.  
 Щелкаем правой кнопкой по рабочему столу, в контекстном меню выбираем file manager.  
 В файловом менеджере находим файл ~/.config/openbox/autostart и отрывем редактором текста.  
-Заменяем в файле название программы в автозапуске на hydrogen-energy-ui должно получиться   
-`~/inenergy-gui/dist/hydrogen-energy-ui*.AppImage > ~/.inenergy/hydrogen-energy-ui.log`  
+Заменяем в файле название программы в автозапуске на car-ui должно получиться   
+`~/inenergy-gui/dist/car-ui*.AppImage > ~/.inenergy/car-ui.log`  
 Перезапускаем систему через то же контекстное меню.
 
 ***
@@ -31,11 +31,11 @@ sudo apt-get install -y git xorg openbox pcmanfm geany lxterminal chromium-brows
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
 После установки нужно выйти из системы `exit` и войти обратно.  
-Теперь надо установить node коммандой `nvm install 12`  
+Теперь надо установить node коммандой `nvm install 8`  
 Можно проверить установку коммандой `node --version`
 
-Затем нужно клонировать репозиторий `git clone https://github.com/SonikDropout/hydrogen-energy-ui.git`  
-Переходим в папку с программой `cd hydrogen-energy-ui`  
+Затем нужно клонировать репозиторий `git clone https://github.com/SonikDropout/car-ui.git`  
+Переходим в папку с программой `cd car-ui`  
 Запускаем установочный скрипт коммандами  
 `chmod +x scripts/install.sh`  
 `./script/install.sh`  
