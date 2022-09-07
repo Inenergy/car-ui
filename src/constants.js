@@ -2,6 +2,7 @@ const { readFileSync, writeFile } = require('fs');
 const path = require('path');
 const i18n = require('./utils/translator');
 
+// загрузка локалей
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'ru.json'), 'ru');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'de.json'), 'de');
 i18n.loadJSON(path.join(__dirname, '..', 'locale', 'en.json'), 'en');
@@ -9,20 +10,27 @@ i18n.setLocale(process.env.LANG.slice(0, 2));
 
 const isPi = process.platform === 'linux' && process.arch === 'arm';
 
+// максимально хранимое количество точек графика
 const MAX_POINTS = 2000;
 
+// таймаут подключения bluetooth
 const CONNECTION_TIMEOUT = 30000;
 
+// разделители в двоичном виде
 const SEPARATORS = Buffer.from([161, 178, 195, 195, 212, 247]);
 
+// идентификаторы bluetooth модулей машинки
 const SERVICE_UUID = 'ffe0';
 const CHARACTERISTIC_UUID = 'ffe1';
 
+// пины GPIO для чтения оборотов в минуту
 const OUTPUT_PIN = 12;
 const INPUT_PIN = 13;
 
+// нижня граница давления при которой появится индикатор разряженного баллона
 const HYDROGEN_CRITICAL_PRESSURE = 0.3;
 
+// характеристики батареи, передаваемые по bluetooth
 const BATTERY_CHARACTERISTICS = {
   batteryVoltage: {
     label: i18n.__('voltage'),
@@ -64,6 +72,7 @@ const BATTERY_CHARACTERISTICS = {
   },
 };
 
+// характеристики ТЭ, передаваемые по bluetooth
 const FUEL_CELL_CHARACTERISTICS = {
   fuelCellMode: {
     label: i18n.__('state'),
@@ -120,6 +129,7 @@ const FUEL_CELL_CHARACTERISTICS = {
   },
 };
 
+// все характеристики, передаваемы по bluetooth, собранные в одну структуру
 const CAR_CHARACTERISTICS = Object.assign(
   {},
   BATTERY_CHARACTERISTICS,
@@ -136,11 +146,13 @@ const CAR_CHARACTERISTICS = Object.assign(
   }
 );
 
+// общая длина принимаемого массива в байтах для проверки посылки
 const BUFFER_LENGTH = Object.values(CAR_CHARACTERISTICS).reduce(
   (sum, ch) => sum + ch.bytes,
   0
 );
 
+// значения, которые пишутся в лог и на график
 const STORED_VALUES = [
   'time',
   'batteryVoltage',
@@ -151,8 +163,10 @@ const STORED_VALUES = [
   'hydrogenConsumption',
 ];
 
+// какой-то костыль
 STORED_VALUES.numOfBatteryValues = 2;
 
+// дефолтный ШИМ для иммитации сопротивления грунта
 const GROUND_RESISTANCE = {
   low: {
     dutyCycle: 0,
@@ -172,9 +186,11 @@ const GROUND_RESISTANCE = {
   },
 };
 
+// путь к сохраненному ID машинки для автоматического подключения bluetooth
 const CONFIG_PATH = isPi ? `~/.car-ui/config.json` : `config.json`;
 let CONFIG = {};
 
+// считывание настроек ШИМ из файла, если они есть
 try {
   CONFIG = JSON.parse(readFileSync(CONFIG_PATH));
   for (const key in GROUND_RESISTANCE) {
@@ -188,6 +204,7 @@ try {
   writeFile(CONFIG_PATH, JSON.stringify(CONFIG), Function.prototype);
 }
 
+// границы осей графиков
 const CHART_CONSTRAINTS = {
   time: [0, 10],
   batteryVoltage: [6, 9],

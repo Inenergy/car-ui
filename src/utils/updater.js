@@ -1,3 +1,5 @@
+/** Модуль автообновления по wi-fi */
+
 const https = require('https');
 const { IS_RPI: isPi } = require('../constants');
 const {

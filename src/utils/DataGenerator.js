@@ -1,3 +1,4 @@
+// Генератор случайных значений для проверки программы на windows
 const { SEPARATORS } = require('../constants');
 const EventEmitter = require('events');
 const { randInt } = require('./numagic');

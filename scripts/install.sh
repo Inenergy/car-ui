@@ -13,7 +13,6 @@ npm i
 npm run build
 
 # MAIN APP AUTOSTART
-mkdir ~/.inenergy
-echo 'sudo ~/inenergy-gui/dist/car-ui*.AppImage > ~/.inenergy/car-ui.log' > ~/.config/openbox/autostart
 mkdir ~/.car-ui
+echo 'sudo ~/inenergy-gui/dist/car-ui*.AppImage > ~/.car-ui/car-ui.log' > ~/.config/openbox/autostart
 echo "{}" > ~/.car-ui/config.json

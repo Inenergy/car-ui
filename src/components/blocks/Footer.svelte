@@ -1,9 +1,20 @@
 <script>
-  import { driveMode, rpm } from "../stores";
-  import { GROUND_RESISTANCE, __ } from "../../constants";
+  import { driveMode, rpm } from '../stores';
+  import { GROUND_RESISTANCE, __ } from '../../constants';
   let resistance;
-  driveMode.subscribe(res => (resistance = GROUND_RESISTANCE[res].label));
+  driveMode.subscribe((res) => (resistance = GROUND_RESISTANCE[res].label));
 </script>
+
+<footer>
+  <div>
+    <span>{__('ground type')}:</span>
+    <strong>{resistance.toLowerCase()}</strong>
+  </div>
+  <div>
+    <span>{__('rpm')}: </span>
+    <strong>{$rpm}</strong>
+  </div>
+</footer>
 
 <style>
   footer {
@@ -20,14 +31,3 @@
     white-space: nowrap;
   }
 </style>
-
-<footer>
-  <div>
-    <span>{__('ground type')}:</span>
-    <strong>{resistance.toLowerCase()}</strong>
-  </div>
-  <div>
-    <span>{__('rpm')}: </span>
-    <strong>{$rpm}</strong>
-  </div>
-</footer>

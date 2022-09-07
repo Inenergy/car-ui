@@ -1,3 +1,5 @@
+/** Чтение обротов и смена имитирумого сопротивления по GPIO */
+
 const { Gpio } = require('pigpio');
 const EventEmitter = require('events');
 const { INPUT_PIN, OUTPUT_PIN, GROUND_RESISTANCE } = require('../constants');

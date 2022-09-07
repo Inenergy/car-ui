@@ -1,3 +1,5 @@
+/** Запись логов в формате xslx */
+
 const path = require('path');
 
 // polyfills required by exceljs

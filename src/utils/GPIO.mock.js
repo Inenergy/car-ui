@@ -1,3 +1,5 @@
+/** Имитация GPIO на windows */
+
 const EventEmitter = require('events');
 const { randInt } = require('./numagic');
 

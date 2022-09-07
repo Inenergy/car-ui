@@ -1,3 +1,5 @@
+// Вспомогательные функции для манипуляций с числами
+
 function scaleLinear([dMin, dMax], [rMin, rMax]) {
   const scale = (num) => rMin + ((rMax - rMin) / (dMax - dMin)) * (num - dMin);
   scale.invert = (num) => dMin + ((dMax - dMin) / (rMax - rMin)) * (num - rMin);

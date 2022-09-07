@@ -1,3 +1,5 @@
+/** Модуль обнаружения подключенной флэшки */
+
 const usbDetect = require('usb-detection');
 const EventEmitter = require('events');
 const { exec } = require('child_process');

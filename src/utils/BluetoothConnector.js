@@ -1,3 +1,5 @@
+/** Модуль отвечающий за связь по bluetooth */
+
 const noble = require('noble');
 const EventEmitter = require('events');
 const DataHandler = require('./DataHandler');
