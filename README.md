@@ -1,14 +1,16 @@
 # Простой GUI для учебного стенда
 
 ## Установка готового образа raspberry os
-Для установки потребуется загрузить образ raspberry os с яндекс диска на флешку.  
+Для установки потребуется загрузить образ raspberry os с яндекс [диска](https://disk.yandex.ru/d/dBhNBLJ7-WqVmA) на флешку.  
 
 Теперь вставляем флешку в raspberry и запитываем её от 5 вольтового блока питания.  
 Когда ОС загрузится завершаем работу текущей программы через alt+f4.  
 Щелкаем правой кнопкой по рабочему столу, в контекстном меню выбираем file manager.  
 В файловом менеджере находим файл ~/.config/openbox/autostart и отрывем редактором текста.  
-Заменяем в файле название программы в автозапуске на car-ui должно получиться   
-`~/inenergy-gui/dist/car-ui*.AppImage > ~/.inenergy/car-ui.log`  
+Заменяем в файле название программы в автозапуске на car-ui и дописываем в начало строки sudo, для pi-4 так же надо добавить --no-sandbox, должно получиться:
+```
+sudo ~/inenergy-gui/dist/car-ui*.AppImage --no-sandbox > ~/.inenergy/car-ui.log
+```
 Перезапускаем систему через то же контекстное меню.
 
 ***
@@ -22,7 +24,7 @@
 Для этого вводим комманды  
 ```sh
 sudo apt-get update
-sudo apt-get install -y git xorg openbox pcmanfm geany lxterminal chromium-browser libudev-dev
+sudo apt-get install -y git xorg openbox lightdm pcmanfm geany lxterminal chromium-browser libudev-dev libxss1
 ```
 Так же нужно установить nvm  
 ```sh
@@ -32,16 +34,19 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 Теперь надо установить node коммандой `nvm install 8`  
 Можно проверить установку коммандой `node --version`
 
-Затем нужно клонировать репозиторий `git clone https://github.com/SonikDropout/car-ui.git`  
-Переходим в папку с программой `cd car-ui`  
-Запускаем установочный скрипт коммандами  
-`chmod +x scripts/install.sh`  
-`./script/install.sh`  
+Затем нужно клонировать репозиторий и запустить установку программы:
+```sh
+git clone https://github.com/SonikDropout/car-ui.git  
+cd car-ui  
+./script/install.sh  
+```
+Теперь осталось включить автозапуск рабочего стола с помощью системной утилиты raspi-config. Вводим `sudo raspi-config` -> system options -> boot/auto login -> autologin to desktop  
+Перезагрузка `sudo reboot`
 ***
 ## Подключение к стенду
 
-Для подключения к стенду помимо очевидных манипулций для оживления экрана с помощью кабелей USB и HDMI потребуется подключить GPIO. Нам нужны 14 и 15 пины. Схема распиновки:
+Для подключения к стенду помимо очевидных манипулций для оживления экрана с помощью кабелей USB и HDMI потребуется подключить GPIO для чтения оборотов. Нам нужны пины GPIO12 и GPIO13. Схема распиновки:
 
 ![gpio](https://www.raspberrypi.com/documentation/computers/images/GPIO-Pinout-Diagram-2.png)
 
-Пин 14 использутеся для передачи, пин 15 для приема сигнала.
+Пин GPIO12 использутеся для передачи, пин GPIO13 для приема сигнала.
